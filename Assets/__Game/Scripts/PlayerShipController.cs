@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 namespace Game
 {
@@ -10,16 +11,20 @@ namespace Game
 
         [field: SerializeField] public bool UseMouseControl { get; set; } = true;
         [field: SerializeField] private Toggle UseMouseControlToggle { get; set; }
+        [field: SerializeField] public bool UseInstantStop { get; set; } = true;
+        [field: SerializeField] private Toggle UseInstantStopToggle { get; set; }
+        [field: SerializeField] private TextMeshProUGUI Coordinates { get; set; }
+        [field: SerializeField] private Slider HealthSlider { get; set; }
 
         private Camera myCamera;
         private Transform myCameraTransform;
         private Transform myTransform;
-        private Rigidbody2D rb;
+        private Vector3 lastShownCoord;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             myTransform = transform;
-            rb = GetComponent<Rigidbody2D>();
         }
 
         private void Start()
@@ -28,6 +33,9 @@ namespace Game
             myCameraTransform = myCamera.transform;
             UseMouseControlToggle.isOn = UseMouseControl;
             UseMouseControlToggle.onValueChanged.AddListener((x) => UseMouseControl = x);
+            UseInstantStopToggle.isOn = UseInstantStop;
+            UseInstantStopToggle.onValueChanged.AddListener((x) => UseInstantStop = x);
+            HealthSlider.value = 1;
         }
 
         private void FixedUpdate()
@@ -43,7 +51,15 @@ namespace Game
             var vertical = Input.GetAxis(InputAction.Vertical);
 
             transform.Rotate(0, 0, -horizontal * RotationSpeed * Time.deltaTime);
-            rb.AddForce(myTransform.up * vertical * ThrustForce * Time.deltaTime);
+
+            if (vertical < 0 && UseInstantStop)
+            {
+                RB.velocity = Vector3.zero;
+            }
+            else
+            {
+                RB.AddForce(myTransform.up * vertical * ThrustForce * Time.deltaTime);
+            }
 
             if (Input.GetButton(InputAction.Fire) ||
                 (UseMouseControl && Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject()))
@@ -52,6 +68,19 @@ namespace Game
             }
 
             myCameraTransform.position = myTransform.position + Vector3.back;
+
+            var distance = Vector3.Distance(lastShownCoord, myTransform.position);
+            if (distance > 0.01f)
+            {
+                lastShownCoord = myTransform.position;
+                Coordinates.text = $"({lastShownCoord.x:0.00},{lastShownCoord.y:0.00})";
+            }
+        }
+
+        protected override void OnHurt()
+        {
+            base.OnHurt();
+            HealthSlider.value = (float)CurrentHealth / (float)MaxHealth;
         }
 
     }

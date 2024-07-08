@@ -1,96 +1,77 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Game
 {
 
     public class Starfield : MonoBehaviour
     {
-        [field: SerializeField] private int MaxStars { get; set; } = 100;
-        [field: SerializeField] private float StarSize { get; set; } = 0.1f;
-        [field: SerializeField] private float StarSizeRange { get; set; } = 0.5f;
-        [field: SerializeField] private float FieldWidth { get; set; } = 20f;
-        [field: SerializeField] private float FieldHeight { get; set; } = 25f;
-        [field: SerializeField] private float ParallaxFactor { get; set; } = 0f;
-        [field: SerializeField] private bool Colorize { get; set; } = false;
+        [field: SerializeField] private float Width { get; set; } = 40f;
+        [field: SerializeField] private float Height { get; set; } = 45f;
+        [field: SerializeField] private float Depth { get; set; } = 0f;
+        [field: SerializeField] private int NumStars { get; set; } = 100;
+        [field: SerializeField] private float MinSize { get; set; } = 0.05f;
+        [field: SerializeField] private float MaxSize { get; set; } = 0.2f;
 
-        float xOffset;
-        float yOffset;
+        private Transform myTransform;
+        private Transform mainCameraTransform;
+        private ParticleSystem myParticleSystem;
+        private ParticleSystem.Particle[] particles;
+        private Vector2 offset;
 
-        ParticleSystem Particles;
-        ParticleSystem.Particle[] Stars;
-        Transform theCamera;
-
-
-        void Awake()
+        private void Awake()
         {
-            theCamera = Camera.main.transform;
-            Stars = new ParticleSystem.Particle[MaxStars];
-            Particles = GetComponent<ParticleSystem>();
-
-            Assert.IsNotNull(Particles, "Particle system missing from object!");
-
-            xOffset = FieldWidth * 0.5f;                                                                                                        // Offset the coordinates to distribute the spread
-            yOffset = FieldHeight * 0.5f;                                                                                                       // around the object's center
-
-            for (int i = 0; i < MaxStars; i++)
+            myTransform = transform;
+            var pos = myTransform.position;
+            mainCameraTransform = Camera.main.transform;
+            offset = new Vector2(Width / 2, Height / 2);
+            myParticleSystem = GetComponent<ParticleSystem>();
+            particles = new ParticleSystem.Particle[NumStars];
+            for (int i = 0; i < NumStars; i++)
             {
-                float randSize = Random.Range(1f - StarSizeRange, StarSizeRange + 1f);          // Randomize star size within parameters
-                float scaledColor = (true == Colorize) ? randSize - StarSizeRange : 1f;         // If coloration is desired, color based on size
-
-                Stars[i].position = GetRandomInRectangle(FieldWidth, FieldHeight) + transform.position;
-                Stars[i].startSize = StarSize * randSize;
-                Stars[i].startColor = new Color(1f, scaledColor, scaledColor, 1f);
+                particles[i].position = new Vector3(
+                    pos.x + Random.value * Width - offset.x,
+                    pos.y + Random.value * Height - offset.y,
+                    pos.z);
+                particles[i].startSize = Random.Range(MinSize, MaxSize);
+                particles[i].startColor = Color.white;
             }
-            Particles.SetParticles(Stars, Stars.Length);                                                                // Write data to the particle system
+            myParticleSystem.SetParticles(particles, particles.Length);                                                                // Write data to the particle system
         }
 
-        void Update()
+        private void Update()
         {
-            for (int i = 0; i < MaxStars; i++)
+            for (int i = 0; i < NumStars; i++)
             {
-                Vector3 pos = Stars[i].position + transform.position;
+                var pos = particles[i].position + myTransform.position;
 
-                if (pos.x < (theCamera.position.x - xOffset))
+                if (pos.x < (mainCameraTransform.position.x - offset.x))
                 {
-                    pos.x += FieldWidth;
+                    pos.x += Width;
                 }
-                else if (pos.x > (theCamera.position.x + xOffset))
+                else if (pos.x > (mainCameraTransform.position.x + offset.x))
                 {
-                    pos.x -= FieldWidth;
-                }
-
-                if (pos.y < (theCamera.position.y - yOffset))
-                {
-                    pos.y += FieldHeight;
-                }
-                else if (pos.y > (theCamera.position.y + yOffset))
-                {
-                    pos.y -= FieldHeight;
+                    pos.x -= Width;
                 }
 
-                Stars[i].position = pos - transform.position;
+                if (pos.y < (mainCameraTransform.position.y - offset.y))
+                {
+                    pos.y += Height;
+                }
+                else if (pos.y > (mainCameraTransform.position.y + offset.y))
+                {
+                    pos.y -= Height;
+                }
+
+                particles[i].position = pos - myTransform.position;
             }
-            Particles.SetParticles(Stars, Stars.Length);
+            myParticleSystem.SetParticles(particles, particles.Length);
 
-            Vector3 newPos = theCamera.position * ParallaxFactor;                                                       // Caculate the position of the object
+            Vector3 newPos = mainCameraTransform.position * Depth;                                                       // Caculate the position of the object
             newPos.z = 0;                                                                                                                                       // Force Z-axis to zero, since we're in 2D
-            transform.position = newPos;
+            myTransform.position = newPos;
 
         }
 
-        // GetRandomInRectangle
-        //----------------------------------------------------------
-        // Get a random value within a certain rectangle area
-        //
-        Vector3 GetRandomInRectangle(float width, float height)
-        {
-            float x = Random.Range(0, width);
-            float y = Random.Range(0, height);
-            return new Vector3(x - xOffset, y - yOffset, 0);
-        }
     }
 
 }
