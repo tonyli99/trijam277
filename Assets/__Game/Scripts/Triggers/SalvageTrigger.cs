@@ -8,7 +8,8 @@ namespace Game
     public class SalvageTrigger : TriggerEvent
     {
 
-        //[field: SerializeField] public 
+        [field: SerializeField] public ItemSO Item { get; set; }
+        [field: SerializeField] public int Quantity { get; set; }
 
         private Transform myTransform;
         private float rotationSpeed;
@@ -19,6 +20,8 @@ namespace Game
             rotationSpeed = Random.Range(0.1f, 1f);
             OnTriggerEnter.AddListener(() =>
             {
+                MessageUI.Instance.AddMessage($"Salvaged {Quantity} {Item.Name}");
+                Inventory.Instance.Add(Item, Quantity);                
                 Destroy(gameObject);
             });
         }

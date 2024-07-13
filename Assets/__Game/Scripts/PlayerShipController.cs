@@ -54,7 +54,7 @@ namespace Game
 
             if (vertical < 0 && UseInstantStop)
             {
-                RB.velocity = Vector3.zero;
+                InstantStop();
             }
             else
             {
@@ -75,6 +75,11 @@ namespace Game
                 lastShownCoord = myTransform.position;
                 Coordinates.text = $"({lastShownCoord.x:0.00},{lastShownCoord.y:0.00})";
             }
+        }
+
+        public void InstantStop()
+        {
+            RB.velocity = Vector3.zero; 
         }
 
         protected override void OnHurt()

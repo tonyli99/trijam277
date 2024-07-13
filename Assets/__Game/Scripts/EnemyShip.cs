@@ -10,6 +10,8 @@ namespace Game
 
         [field: SerializeField] private SalvageTrigger SalvagePrefab;
 
+        public ItemSO Item { get; set; }
+
         private Transform myTransform;
         private Transform playerTransform;
         private bool hasDestination = false;
@@ -55,7 +57,9 @@ namespace Game
         protected override void OnDied()
         {
             base.OnDied();
-            Instantiate(SalvagePrefab, transform.position, Quaternion.identity);
+            var salvage = Instantiate(SalvagePrefab, transform.position, Quaternion.identity);
+            salvage.Item = Item;
+            salvage.Quantity = Random.Range(1, 20);
             Destroy(gameObject);
         }
     }
