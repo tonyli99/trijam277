@@ -139,6 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <PlanetNameTmp>k__BackingField: {fileID: 3282690995129508454}
   <LandPrompt>k__BackingField: {fileID: 3904618488753671093}
+  <ItemDatabase>k__BackingField: {fileID: 11400000, guid: 948ae27e32783ea4a90126e871946079, type: 2}
 --- !u!1 &2484544636146573027
 GameObject:
   m_ObjectHideFlags: 0

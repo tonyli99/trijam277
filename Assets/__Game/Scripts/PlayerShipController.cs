@@ -79,7 +79,7 @@ namespace Game
 
         public void InstantStop()
         {
-            RB.velocity = Vector3.zero; 
+            RB.linearVelocity = Vector3.zero; 
         }
 
         protected override void OnHurt()

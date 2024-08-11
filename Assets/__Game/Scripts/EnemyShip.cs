@@ -36,7 +36,7 @@ namespace Game
                 var angle = Mathf.Atan2(destination.y - myTransform.position.y, destination.x - myTransform.position.x) * Mathf.Rad2Deg;
                 var targetRotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));
                 myTransform.rotation = Quaternion.RotateTowards(myTransform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
-                if (RB.velocity.magnitude < MaxSpeed) RB.AddForce(myTransform.up * ThrustForce * Time.deltaTime);
+                if (RB.linearVelocity.magnitude < MaxSpeed) RB.AddForce(myTransform.up * ThrustForce * Time.deltaTime);
             }   
             else if (distanceToPlayer < AttackDistance)
             {
@@ -46,7 +46,7 @@ namespace Game
             }
             else
             {
-                RB.velocity = Vector3.zero;
+                RB.linearVelocity = Vector3.zero;
             }
             if (distanceToPlayer < FiringDistance)
             {

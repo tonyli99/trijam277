@@ -11,8 +11,11 @@ namespace Game
 
         [field: SerializeField] private TextMeshPro PlanetNameTmp { get; set; }
         [field: SerializeField] private GameObject LandPrompt { get; set; }
+        [field: SerializeField] private ItemDatabaseSO ItemDatabase {  get; set; }
 
         public string PlanetName { get; private set; }
+
+        public Dictionary<ItemSO, int> Items { get; private set; } = new Dictionary<ItemSO, int>();
 
         private void Start()
         {
@@ -20,6 +23,19 @@ namespace Game
             PlanetNameTmp.text = PlanetName;
             var spriteRenderer = GetComponent<SpriteRenderer>();
             spriteRenderer.color = new Color(Random.value, Random.value, Random.value);
+            for (int i = 0; i < Random.Range(2, 5); i++)
+            {
+                var item = ItemDatabase.Items[i];
+                var amount = Random.Range(2, 20);
+                if (Items.ContainsKey(item))
+                {
+                    Items[item] += amount;
+                }
+                else
+                {
+                    Items.Add(item, amount);
+                }
+            }
         }
 
         static string[] letters = new string[] { "Alpha", "Beta", "Gamma", "Delta", "Chi", "Epsilon" };
