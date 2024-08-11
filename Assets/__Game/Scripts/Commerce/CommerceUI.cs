@@ -98,6 +98,7 @@ namespace Game
 
         private void Buy(ItemSO item, int amount)
         {
+            AudioManager.Instance.ChaChing();
             if (amount < planet.Items[item])
             {
                 planet.Items[item] -= amount;
@@ -120,6 +121,7 @@ namespace Game
 
         private void Sell(ItemSO item, int amount)
         {
+            AudioManager.Instance.ChaChing();
             if (amount < Inventory.Instance.Items[item])
             {
                 Inventory.Instance.Items[item] -= amount;

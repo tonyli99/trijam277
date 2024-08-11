@@ -77,6 +77,7 @@ namespace Game
         {
             var bullet = SpawnBullet();
             bullet.Fire(gameObject, MuzzlePosition, BulletDamage);
+            AudioManager.Instance.Shoot();
         }
 
         protected virtual void OnHurt()
@@ -84,6 +85,7 @@ namespace Game
 
         protected virtual void OnDied()
         {
+            AudioManager.Instance.Explode();
             Instantiate(ExplosionPrefab, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }

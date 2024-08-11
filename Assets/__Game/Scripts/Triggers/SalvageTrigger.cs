@@ -20,6 +20,7 @@ namespace Game
             rotationSpeed = Random.Range(0.1f, 1f);
             OnTriggerEnter.AddListener(() =>
             {
+                AudioManager.Instance.Pickup();
                 MessageUI.Instance.AddMessage($"Salvaged {Quantity} {Item.Name}");
                 Inventory.Instance.Add(Item, Quantity);                
                 Destroy(gameObject);

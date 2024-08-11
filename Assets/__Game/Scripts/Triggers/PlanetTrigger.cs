@@ -74,6 +74,7 @@ namespace Game
 
         private void Land()
         {
+            AudioManager.Instance.Land();
             Time.timeScale = 0;
             FindFirstObjectByType<PlayerShipController>().InstantStop();
             CommerceUI.Instance.Open(this);
